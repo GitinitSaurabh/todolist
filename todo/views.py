@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -58,4 +58,6 @@ def createtodo(request):
         except ValueError:
             return render(request, 'todo/createtodo.html',{'form':TodoForm(), 'error':'Enter correct data, field validation failed!'})
 
-        
+def viewtodo(request, todo_pk):
+    todo = get_object_or_404(Todo,pk=todo_pk)
+    return render(request,'todo/viewtodo.html',{'todos':todos})
