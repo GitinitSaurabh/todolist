@@ -31,5 +31,8 @@ urlpatterns = [
     #Logout User
     path('logout/',views.logoutuser, name='logoutuser'),
 
+    #Login User
+    path('login/',views.loginuser, name='loginuser'),
+
 
 ]
