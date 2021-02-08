@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from .forms import TodoForm
 from .models import Todo
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'todo/home.html')
@@ -27,11 +28,17 @@ def signupuser(request):
         else:
             return render(request, 'todo/signupuser.html',{'form':UserCreationForm(),'error':'Passwords do not match!'})
 
-
+@login_required 
 def current(request):
     todos = Todo.objects.filter(user=request.user, datecompleted__isnull=True)
     return render(request, 'todo/current.html',{'todos':todos})
 
+@login_required 
+def completedtodo(request):
+    todos = Todo.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    return render(request, 'todo/completedtodo.html',{'todos':todos})
+
+@login_required   
 def logoutuser(request):
     if request.method == 'POST':
         logout(request)
@@ -47,6 +54,7 @@ def loginuser(request):
             login(request, user)
             return redirect('current')    
 
+@login_required 
 def createtodo(request):
     if request.method == 'GET':
         return render(request, 'todo/createtodo.html',{'form':TodoForm()})
@@ -60,6 +68,7 @@ def createtodo(request):
         except ValueError:
             return render(request, 'todo/createtodo.html',{'form':TodoForm(), 'error':'Enter correct data, field validation failed!'})
 
+@login_required 
 def viewtodo(request, todo_pk):
     todo = get_object_or_404(Todo,pk=todo_pk, user=request.user)
     if request.method == 'GET':
@@ -73,6 +82,7 @@ def viewtodo(request, todo_pk):
         except:
             return render(request,'todo/viewtodo.html',{'todo':todo,'form':form, 'error':'Bad Info!'})
 
+@login_required 
 def completetodo(request, todo_pk):
     todo = get_object_or_404(Todo,pk=todo_pk, user=request.user)
     if request.method == 'POST':
@@ -80,6 +90,13 @@ def completetodo(request, todo_pk):
         todo.save()
         return redirect('current')    
 
+@login_required 
+def deletetodo(request, todo_pk):
+    todo = get_object_or_404(Todo,pk=todo_pk, user=request.user)
+    if request.method == 'POST':
+        todo.datecompleted = timezone.now()
+        todo.delete()
+        return redirect('current')    
 
 
 
