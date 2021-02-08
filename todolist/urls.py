@@ -24,6 +24,12 @@ urlpatterns = [
     path('signup/',views.signupuser, name='signupuser'),
 
     #Todo
-    path('current/',views.current, name='current')
+    path('current/',views.current, name='current'),
+    path('',views.home, name='home'),
+
+
+    #Logout User
+    path('logout/',views.logoutuser, name='logoutuser'),
+
 
 ]
