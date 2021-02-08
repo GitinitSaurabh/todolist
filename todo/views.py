@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
-
+from .forms import TodoForm
+from .models import Todo
 def home(request):
     return render(request, 'todo/home.html')
 
@@ -26,7 +27,8 @@ def signupuser(request):
 
 
 def current(request):
-    return render(request, 'todo/current.html')
+    todos = Todo.objects.filter(user=request.user, datecompleted__isnull=True)
+    return render(request, 'todo/current.html',{'todos':todos})
 
 def logoutuser(request):
     if request.method == 'POST':
@@ -42,3 +44,18 @@ def loginuser(request):
        else:
             login(request, user)
             return redirect('current')    
+
+def createtodo(request):
+    if request.method == 'GET':
+        return render(request, 'todo/createtodo.html',{'form':TodoForm()})
+    else:
+        try:
+            form = TodoForm(request.POST)
+            newtodo = form.save(commit=False)
+            newtodo.user = request.user
+            newtodo.save()
+            return redirect('current')    
+        except ValueError:
+            return render(request, 'todo/createtodo.html',{'form':TodoForm(), 'error':'Enter correct data, field validation failed!'})
+
+        

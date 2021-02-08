@@ -26,6 +26,8 @@ urlpatterns = [
     #Todo
     path('current/',views.current, name='current'),
     path('',views.home, name='home'),
+    path('create/',views.createtodo, name='createtodo'),
+
 
 
     #Logout User
